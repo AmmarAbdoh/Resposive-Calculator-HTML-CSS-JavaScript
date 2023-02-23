@@ -3,6 +3,8 @@ var btn = document.querySelectorAll('.btn');
 var ghostString = false;
 var operationFlag = false;
 var dotFlag = true;
+var bracketFlag = false;
+var strongOperationFlag = false;
 
 document.addEventListener('keydown', (e) => { //Keyboard
     btntext = e.key;
@@ -34,10 +36,16 @@ for (item of btn) { // Buttons
 function Print_On_Screen(btntext) { //Check
     if ((btntext == '+') || (btntext == '-') || (btntext == '÷') || (btntext == '×') || (btntext == '/') || (btntext == '*') || (btntext == '%')) {
         if (operationFlag) {
+            if(!bracketFlag && !strongOperationFlag)
+                calculate(btntext);
             if (btntext == '×')
                 btntext = '*';
             else if (btntext == '÷')
                 btntext = '/';
+            
+            if(btntext == '*' || btntext == '/' || btntext == '%') {
+                strongOperationFlag = true;
+            }
 
 
             operationFlag = false;
@@ -55,6 +63,14 @@ function Print_On_Screen(btntext) { //Check
     }
     else if (screen.value == '0')
         screen.value = btntext;
+    else if (btntext == '(') {
+        bracketFlag = true;
+        screen.value += btntext;
+    }
+    else if (btntext == ')') {
+        bracketFlag = false;
+        screen.value += btntext;
+    }
     else {
         operationFlag = true;
         screen.value += btntext;
@@ -65,9 +81,6 @@ function Print_On_Screen(btntext) { //Check
         screen.value = btntext;
         ghostString = false;
     }
-
-
-
 }
 
 function sin() {
@@ -95,11 +108,11 @@ function log() {
 }
 
 function pi() {
-    screen.value = 3.14159265359;
+    Print_On_Screen(22/7);
 }
 
 function e() {
-    screen.value = 2.71828182846;
+    screen.value += 2.71828182846;
 }
 
 function fact() {
@@ -119,6 +132,8 @@ function calculate() {
     ghostString = true;
     try {
         screen.value = eval(screen.value);
+        if (isNaN(screen.value))
+            screen.value = 'ERROR';
     }
     catch (e) {
         if (e instanceof SyntaxError) {
@@ -128,6 +143,11 @@ function calculate() {
 
     if (!operationFlag)
         screen.value = 'Complete the equation plz';
+    
+    operationFlag = false;
+    dotFlag = true;
+    bracketFlag = false;
+    strongOperationFlag = false;
 }
 
 function backspc() {
